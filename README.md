@@ -7,6 +7,6 @@ Given a keyword, it automatically generates a knowledge graph 🕸️ with relat
 
 ## Contribution
 This project was initially made by Samuel Tang (Product Design, Frontend), George Li (Backend/Django) and Sunrui Lu (Full stack) for our *Service Oriented Software Design and Development* class at Tsinghua University. See our original repo [here](https://github.com/codeforcoffee-studio/studily-frontend).   
-This expanded version is built by Samuel Tang (Product Design, Full stack) with further developed frontend and improved backend (rewritten in NodeJS/Express).
+This expanded version is built by Samuel Tang (Product Design, Full stack) with improved frontend and backend (rewritten in NodeJS/Express).
 
 ## Architecture
