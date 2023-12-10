@@ -1,5 +1,5 @@
 ## Studily ☕
-<img src="./frontend/src/imgs/studily-logo-long.png"
+<img src="./imgs/studily-logo-long.png"
      alt="studily-logo" width="450"/>    
 </br>
 Studily is a study copilot to help you learn faster. 🧐
@@ -13,3 +13,7 @@ This project was initially made by Samuel Tang (Product Design, Frontend), Georg
 This expanded version is built by Samuel Tang (Product Design, Full stack) with improved frontend and backend (rewritten in NodeJS/Express).
 
 ## Architecture
+<img src="./imgs/architecture.png"
+     alt="studily-architecture" width="700"/>    
+</br>
+## Product Design
