@@ -3,7 +3,6 @@ import { Grid, Card, Text, Spacer, Input, Button, Spinner, Select } from '@geist
 import { Circle, Search } from '@geist-ui/icons';
 
 
-
 const SearchButton = ({node, addGraph}) => {
     const [isHovered, setIsHovered] = useState(false);
     const [select, setSelect] = useState("breath");

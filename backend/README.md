@@ -1,12 +1,10 @@
 ## Run the Project
 1. `npm install` to install all dependencies  
-2. `firebase init` to initialize project with firebase  
-3. add firebase configuration file (see below)  
-4. `firebase serve` to run serve locally  
-or  
-5. `firebase deploy` to deploy apis to server
+2. `firebase login` to login to your firebase account
+3. `firebase init` to initialize project with firebase  
+4. add firebase configuration file
 
-*add firebase configurations in /functions/util/config.js:  
+*/functions/util/config.js:  
 
     const firebaseConfig = {
         apiKey: "",   
@@ -18,6 +16,11 @@ or
         measurementId: ""
     };
     module.exports = { firebaseConfig };
+
+5. `firebase serve` to run serve locally  
+or  
+6. `firebase deploy` to deploy apis to server
+7. add .env file with your OpenAI api key `OPENAI_API_KEY=""`
 
 
 ## API Documentation

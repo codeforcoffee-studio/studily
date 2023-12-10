@@ -347,213 +347,6 @@ const BingListComponent = ({ initNode }) => {
     );
 };
 
-const BaiduListComponent = ({ initNode }) => {
-    const [summaries, setSummaries] = useState({});
-    const [waitingIndex, setWaitingIndex] = useState(-1);
-    const [items, setItems] = useState([])
-    const [waiting, setWaiting] = useState(false);
-
-    useEffect(()=>{
-        console.log("baidu search node: ", initNode.label);
-        setWaiting(true);
-        if(initNode){
-            axios.post('http://140.99.171.75:8000/api/serpapi_api', { "engine": "baidu", "query": initNode.label })
-            .then(res => {
-              console.log(res);
-              console.log("bing links: ", res.data.message);
-              setItems(res.data.message)
-              setWaiting(false);
-            })
-            .catch(error => {
-                console.log(error);
-            })
-        }
-    }, [initNode])
-
-    const styles = {
-        divcol: {
-            background: '#f5fbff', 
-            padding: '4px', 
-            borderRadius: '10px',
-            margin: '5px',
-            display: 'flex', 
-            flexDirection: 'column',
-            alignContent: "center"
-        },
-        divrow: {
-            display: 'flex', 
-            flexDirection: 'row',
-            justifyContent: 'center'
-        },
-        link: {
-            textDecoration: 'none', 
-            color: '#333', 
-            // fontWeight: 'bold'
-        },
-        button: {
-            marginLeft: '10px'
-        },
-        div: {
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: "100%",
-            justifyContent: 'center',
-            alignContent: 'center',
-            textAlign: 'left'
-        },
-    }
-
-    function truncateString(string, maxLength) {
-        if (string.length > maxLength) {
-          return string.substring(0, maxLength - 3) + '...';
-        }
-        return string;
-      }
-
-    const handleClick = (videoId, index) => {
-        
-    }
-    
-    return (
-      <div>
-        {
-        waiting ? 
-            <div style={styles.div}>
-                <Spacer h={1}/>
-                <Spinner/>
-            </div>
-            :
-        items.map((item, index) => (
-          index < 5 ? 
-          <div style={styles.divcol} key={index}>
-            <div style={styles.divrow}> 
-                <Button icon={<Search />} style={{width:"300px"}}>
-                    <a key={index} href={item.link} target="_blank" rel="noopener noreferrer" style={styles.link}>
-                        {truncateString(item.title, 25)}
-                    </a>
-                </Button>
-                {/* {
-                    waitingIndex === index ? 
-                    // <Button auto style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    //     <Spinner />
-                    // </Button>
-                    <Button loading scale={0.75}></Button>
-                    :
-                    <Button icon={<Zap />} auto scale={0.8} onClick={() => handleClick(item.videoId, index)} style={styles.button}>Summarize</Button>
-                } */}
-            </div>
-          </div>
-          :
-          <></>
-        ))}
-      </div>
-    );
-};
-
-const BilibiliListComponent = ({ initNode }) => {
-    const [summaries, setSummaries] = useState({});
-    const [waitingIndex, setWaitingIndex] = useState(-1);
-    const [items, setItems] = useState([])
-    const [waiting, setWaiting] = useState(false);
-
-    useEffect(()=>{
-        console.log("baidu search node: ", initNode.label);
-        setWaiting(true);
-        if(initNode){
-            axios.post('http://140.99.171.75:8000/api/bilibili_api', { "type": "video", "keyword": initNode.label })
-            .then(res => {
-              console.log(res);
-              console.log("bing links: ", res.data.message);
-              setItems(res.data.message)
-              setWaiting(false);
-            })
-            .catch(error => {
-                console.log(error);
-            })
-        }
-    }, [initNode])
-
-    const styles = {
-        divcol: {
-            background: '#f6eeee', 
-            padding: '4px', 
-            borderRadius: '10px',
-            margin: '5px',
-            display: 'flex', 
-            flexDirection: 'column',
-            alignContent: "center"
-        },
-        divrow: {
-            display: 'flex', 
-            flexDirection: 'row',
-            justifyContent: 'center'
-        },
-        link: {
-            textDecoration: 'none', 
-            color: '#333', 
-            // fontWeight: 'bold'
-        },
-        button: {
-            marginLeft: '10px'
-        },
-        div: {
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: "100%",
-            justifyContent: 'center',
-            alignContent: 'center',
-            textAlign: 'left'
-        },
-    }
-
-    function truncateString(string, maxLength) {
-        if (string.length > maxLength) {
-          return string.substring(0, maxLength - 3) + '...';
-        }
-        return string;
-      }
-
-    const handleClick = (videoId, index) => {
-        
-    }
-    
-    return (
-      <div>
-        {
-        waiting ? 
-            <div style={styles.div}>
-                <Spacer h={1}/>
-                <Spinner/>
-            </div>
-            :
-        items.map((item, index) => (
-          index < 5 ? 
-          <div style={styles.divcol} key={index}>
-            <div style={styles.divrow}> 
-                <Button icon={<Play />} style={{width:"300px"}}>
-                    <a key={index} href={item.link} target="_blank" rel="noopener noreferrer" style={styles.link}>
-                        {truncateString(item.title, 25)}
-                    </a>
-                </Button>
-                {/* {
-                    waitingIndex === index ? 
-                    // <Button auto style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    //     <Spinner />
-                    // </Button>
-                    <Button loading scale={0.75}></Button>
-                    :
-                    <Button icon={<Zap />} auto scale={0.8} onClick={() => handleClick(item.videoId, index)} style={styles.button}>Summarize</Button>
-                } */}
-            </div>
-          </div>
-          :
-          <></>
-        ))}
-      </div>
-    );
-};
 
 
 const InfoPage = ({initNode, path, graph, centerNode}) => {
@@ -562,7 +355,6 @@ const InfoPage = ({initNode, path, graph, centerNode}) => {
     const [waiting, setWaiting] = useState(false);
     const [youtubeLinks, setYoutubeLinks] = useState([]);
     const [bingLinks, setBingLinks] = useState([]);
-    const [bilibiliLinks, setBilibiliLinks] = useState([]);
     const [modal, setModal] = useState(false);
 
     useEffect(()=>{
@@ -669,7 +461,7 @@ const InfoPage = ({initNode, path, graph, centerNode}) => {
                         <Text h3>{node.label}</Text>  
                         <Text p><b>Definition</b>: {node.definition}</Text>  
                         
-                        <Tabs initialValue="1">
+                        {/* <Tabs initialValue="1">
                             <Tabs.Item label="Wikipedia" value="1">
                                 <WikiListComponent initNode={initNode}/>
                             </Tabs.Item>
@@ -679,13 +471,7 @@ const InfoPage = ({initNode, path, graph, centerNode}) => {
                             <Tabs.Item label="Bing" value="3">
                                 <BingListComponent initNode={initNode}/>
                             </Tabs.Item>
-                            <Tabs.Item label="Baidu" value="4">
-                                <BaiduListComponent initNode={initNode}/>
-                            </Tabs.Item>
-                            <Tabs.Item label="Bilibili" value="5">
-                                <BilibiliListComponent initNode={initNode}/>
-                            </Tabs.Item>
-                        </Tabs>
+                        </Tabs> */}
                     </div>
                 :
                 <></>

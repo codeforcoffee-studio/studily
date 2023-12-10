@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import './styles/App.css';
 
 import "./styles/styles.css";
@@ -12,6 +12,8 @@ import axios from 'axios';
 import KnowledgeGraph from './components/knowledgeGraph';
 import SearchButton from './components/searchButton';
 
+const API_BASE_URL = "http://localhost:5000/studily-ca0ed/us-central1/api";
+
 const App = () => {
   const [searchValue, setSearchValue] = useState("");
   const [node, setNode] = useState(null);
@@ -22,6 +24,7 @@ const App = () => {
   const [dragNode, setDragNode] = useState(null);
   const [gravity, setGravity] = useState(true);
   const [nodeSize, setNodeSize] = useState(13);
+  const [width, setWidth] = React.useState(window.innerWidth);
 
   const styles = {
     grid: {
@@ -59,19 +62,46 @@ const App = () => {
   },
   }
 
+  useEffect(()=>{
+    const handleResizeWindow = () => setWidth(window.innerWidth);
+    // subscribe to window resize event "onComponentDidMount"
+    window.addEventListener("resize", handleResizeWindow);
+
+    const keyDownHandler = event => {
+      console.log('User pressed: ', event.key);
+
+      if (event.key === 'Enter') {
+        event.preventDefault();
+
+        onSubmitButtonPressed();
+      }
+    };
+
+    document.addEventListener('keydown', keyDownHandler);
+
+    return () => {
+      // unsubscribe "onComponentDestroy"
+      window.removeEventListener("resize", handleResizeWindow);
+      document.removeEventListener('keydown', keyDownHandler);
+    };
+  }, [searchValue]);
+
   const onInputChange = (e) => {
     setSearchValue(e.target.value);
   }
 
   const onSubmitButtonPressed = () => {
+    if(searchValue == ""){
+      return;
+    }
     console.log("submitting ", searchValue);
     setWaiting(true);
 
-    axios.post('http://140.99.171.75:8000/api/chatgpt_api', { "type": "keyword-list", "keyword": `${searchValue}` })
+    axios.post(API_BASE_URL+"/chatgpt_api", { "type": "keyword-list", "keyword": `${searchValue}` , "previous_word": ""})
     .then(res => {
       console.log(res);
-      console.log(res.data.message);
-      let relatedKeywords = res.data.message.replace(/\./g, '').split(', ');
+      console.log(res.data);
+      let relatedKeywords = res.data.replace(/\./g, '').split(', ');
 
       let nodes = [];
       let edges = [];
@@ -127,13 +157,13 @@ const App = () => {
     const bread = breadcrumbs(node_id);
 
     if(!definitions[keyword]){
-      axios.post('http://140.99.171.75:8000/api/chatgpt_api', { "type": "keyword-explanation", "keyword": keyword + " in the context of " + `${searchValue} ` })
+      axios.post(API_BASE_URL+"/chatgpt_api", { "type": "keyword-explanation", "keyword": keyword + " in the context of " + `${searchValue} `, "previous_word": ""})
       .then(res => {
-        console.log(res.data.message);
-        setDefinitions({[searchValue]: res.data.message});
+        console.log(res.data);
+        setDefinitions({[searchValue]: res.data});
         const nodeObj = {
           ...graph.nodes[node_id],
-          'definition': res.data.message
+          'definition': res.data
         }
         setNode(nodeObj);
       })
@@ -161,12 +191,13 @@ const App = () => {
 
   const addGraph = (node, type, depth) => {
     console.log("searching: " + node.label + " with id " + node.id + " " + type + " " + depth);
+    const bread = breadcrumbs(node.id);
     if(type === "breath"){
-      axios.post('http://140.99.171.75:8000/api/chatgpt_api', { "type": "keyword-list", "keyword": `${node.label}` })
+      axios.post(API_BASE_URL+"/chatgpt_api", { "type": "keyword-list-bfs", "keyword": `${node.label}`, "previous_keyword": `${graph.nodes[bread.length-1].label}`})
       .then(res => {
         console.log(res);
-        console.log(res.data.message);
-        let relatedKeywords = res.data.message.replace(/\./g, '').split(', ');
+        console.log(res.data);
+        let relatedKeywords = res.data.replace(/\./g, '').split(', ');
   
         let nodes = [];
         let edges = [];
@@ -180,7 +211,7 @@ const App = () => {
         //   { from: 1, to: 3 }
         // ]
         for(var i = 0; i < 5; i+=1){
-          nodes.push({id: graph.nodes.length + (i+1), label: `${relatedKeywords[i]}`, color: "#D4D4D4"});
+          nodes.push({id: graph.nodes.length + (i), label: `${relatedKeywords[i]}`, color: "#D4D4D4"});
           edges.push({from: node.id, to: graph.nodes.length + (i+1), arrows: { from: { enabled: false, type: 'arrow' } }});
         }
         console.log(nodes);
@@ -194,17 +225,12 @@ const App = () => {
         console.error(error);
       });
     }
-    else if(type === "depth"){
-      const bread = breadcrumbs(node.id);
-      const searchWords = [];
-      searchWords.push(graph.nodes[bread.length-2].label)
-      searchWords.push(graph.nodes[bread.length-1].label)
-      
-      axios.post('http://140.99.171.75:8000/api/chatgpt_api', { "type": "keyword-list-dfs", "keyword": searchWords })
+    else if(type === "depth"){  
+      axios.post(API_BASE_URL+"/chatgpt_api", { "type": "keyword-list-dfs", "keyword": `${node.label}`, "previous_keyword": `${graph.nodes[bread.length-1].label}`})
       .then(res => {
         console.log(res);
-        console.log(res.data.message);
-        let relatedKeywords = res.data.message.replace(/\./g, '').split(', ');
+        console.log(res.data);
+        let relatedKeywords = res.data.replace(/\./g, '').split(', ');
   
         let nodes = [];
         let edges = [];
@@ -220,7 +246,7 @@ const App = () => {
         console.log("graph nodes length: ",graph.nodes.length);
         var prev_node = node.id;
         for(var i = 0; i < 3; i+=1){
-          nodes.push({id: graph.nodes.length + (i+1), label: `${relatedKeywords[i]}`, color: "#D4D4D4"});
+          nodes.push({id: graph.nodes.length + i, label: `${relatedKeywords[i]}`, color: "#D4D4D4"});
           edges.push({from: prev_node, to: graph.nodes.length + (i+1), arrows: { from: { enabled: false, type: 'arrow' } }});
           prev_node = graph.nodes.length + (i+1);
         }
@@ -261,7 +287,7 @@ const App = () => {
           <div style={styles.input}>
             Studily by
             <Spacer w={0.5}/>
-            <Button icon={<Coffee />} auto><a href='https://github.com/codeforcoffee-studio' target="_blank" rel="noreferrer">Code for Coffee</a></Button>
+            <Button icon={<Coffee />} auto><a href='https://github.com/codeforcoffee-studio/studily' target="_blank" rel="noreferrer">Code for Coffee</a></Button>
           </div>
 
           <Spacer h={1}/>
