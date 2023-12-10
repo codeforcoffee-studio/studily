@@ -1,6 +1,6 @@
 ## Studily ☕
 <img src="./frontend/src/imgs/studily-logo-long.png"
-     alt="studily-logo" width="250"/>    
+     alt="studily-logo" width="450"/>    
 </br>
 Studily is a study copilot to help you learn faster. 🧐
 Given a keyword, it automatically generates a knowledge graph 🕸️ with related terms and definitions. It queries other APIs such as Wikipedia and YouTube to provide more context and resources, with the option to quickly summarize the content inside those links. You're able to expand the knowledge graph with breath-first and depth-first search on any node to further explore and go down the 🐰 hole. 
