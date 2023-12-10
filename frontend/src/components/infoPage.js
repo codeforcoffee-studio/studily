@@ -418,7 +418,7 @@ const InfoPage = ({initNode, path, graph, centerNode}) => {
                 <Button icon={<Settings />} auto disabled>Settings</Button>
                 <Button icon={<Info />} auto onClick={()=>setModal(!modal)}>
                     <Modal visible={modal} onClose={()=>setModal(!modal)}>
-                        <Modal.Title>About Studily</Modal.Title>
+                        <Modal.Title>About Studily ☕</Modal.Title>
                         <Modal.Content>
                             <p style={{textAlign: 'center'}}>
                                 Studily is a study copilot to help you learn faster. 🧐

@@ -5,7 +5,7 @@ import "./styles/styles.css";
 import { Grid, Card, Text, Spacer, Input, Button, Spinner, Toggle, Select,  } from '@geist-ui/core';
 import { CornerDownLeft, Coffee, CornerLeftDown, CornerRightUp } from '@geist-ui/icons'
 
-import logo from "./imgs/Studily.png"
+import logo from "./imgs/studily-signature.png"
 import InfoPage from './components/infoPage';
 
 import axios from 'axios';
@@ -33,7 +33,7 @@ const App = () => {
       alignItems: 'center'
     },
     img: {
-      width: '15%',
+      width: '10%',
       height: 'auto',
     },
     input: {
@@ -283,11 +283,12 @@ const App = () => {
       <Grid.Container gap={0} justify="center" align='center' height="100%">
         <Grid xs={24} md={12} width="100%" style={styles.grid}>
           <Spacer h={1}/>
-          {/* <img src={logo} alt="Logo" style={styles.img}/> */}
+          
           <div style={styles.input}>
-            Studily by
+            <img src={logo} alt="Logo" style={styles.img}/>
+            by 
             <Spacer w={0.5}/>
-            <Button icon={<Coffee />} auto><a href='https://github.com/codeforcoffee-studio/studily' target="_blank" rel="noreferrer">Code for Coffee</a></Button>
+            <Button icon={<Coffee />} auto><a href='https://github.com/codeforcoffee-studio/studily' target="_blank" rel="noreferrer">CodeforCoffee</a></Button>
           </div>
 
           <Spacer h={1}/>
