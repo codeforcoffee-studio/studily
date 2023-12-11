@@ -5,6 +5,8 @@ import {  } from '@geist-ui/icons';
 import "../styles/info.css";
 import axios from 'axios';
 
+const API_BASE_URL = "http://localhost:5000/studily-ca0ed/us-central1/api";
+
 const WikiListComponent = ({initNode}) => {
     const [summaries, setSummaries] = useState({});
     const [waitingIndex, setWaitingIndex] = useState(-1);
@@ -14,11 +16,12 @@ const WikiListComponent = ({initNode}) => {
     useEffect(()=>{
         if(initNode){
             setWaiting(true);
-            axios.post('http://140.99.171.75:8000/api/wiki_api', { "type": "keyword_search", "keyword": initNode.label })
+            console.log(initNode.label);
+            axios.post(API_BASE_URL+'/wiki_api', { "type": "keyword-search", "keyword": initNode.label })
             .then(res => {
               console.log(res);
-              console.log("wiki links: ", res.data.message);
-              setItems(res.data.message)
+              console.log("wiki links: ", res.data);
+              setItems(res.data)
               setWaiting(false);
             })
             .catch(error => {
@@ -70,7 +73,7 @@ const WikiListComponent = ({initNode}) => {
 
     const handleClick = (pageid, index) => {
         setWaitingIndex(index);
-        axios.post('http://140.99.171.75:8000/api/wiki_api', { "type": "page_summary", "keyword": pageid })
+        axios.post(API_BASE_URL+'/wiki_api', { "type": "page-summary", "link": items[pageid].original_link })
         .then(res => {
           console.log(res);
           console.log("summary: ", res.data.message);
@@ -92,7 +95,7 @@ const WikiListComponent = ({initNode}) => {
             </div>
             :
         items.map((item, index) => (
-          index < 5 ? 
+          //index < 5 ? 
           <div style={styles.divcol} key={index}>
             <div style={styles.divrow}> 
                 <Button icon={<BookOpen />} style={{width:"300px"}}>
@@ -107,7 +110,7 @@ const WikiListComponent = ({initNode}) => {
                     // </Button>
                     <Button loading scale={0.75}></Button>
                     :
-                    <Button icon={<Zap />} auto scale={0.8} onClick={() => handleClick(item.pageid, index)} style={styles.button}>Summarize</Button>
+                    <Button disabled icon={<Zap />} auto scale={0.8} onClick={() => handleClick(item.pageid, index)} style={styles.button}>Summarize</Button>
                 }
             </div>
             {
@@ -117,8 +120,8 @@ const WikiListComponent = ({initNode}) => {
                 <></>
             }
           </div>
-          :
-          <></>
+        //   :
+        //   <></>
         ))
         }
       </div>    
@@ -461,17 +464,17 @@ const InfoPage = ({initNode, path, graph, centerNode}) => {
                         <Text h3>{node.label}</Text>  
                         <Text p><b>Definition</b>: {node.definition}</Text>  
                         
-                        {/* <Tabs initialValue="1">
+                        <Tabs initialValue="1">
                             <Tabs.Item label="Wikipedia" value="1">
                                 <WikiListComponent initNode={initNode}/>
                             </Tabs.Item>
-                            <Tabs.Item label="YouTube" value="2">
+                            {/* <Tabs.Item label="YouTube" value="2">
                                 <YouTubeListComponent initNode={initNode}/> 
                             </Tabs.Item>
                             <Tabs.Item label="Bing" value="3">
                                 <BingListComponent initNode={initNode}/>
-                            </Tabs.Item>
-                        </Tabs> */}
+                            </Tabs.Item> */}
+                        </Tabs>
                     </div>
                 :
                 <></>

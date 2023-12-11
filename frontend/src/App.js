@@ -114,7 +114,7 @@ const App = () => {
       //   { from: 1, to: 2 },
       //   { from: 1, to: 3 }
       // ]
-      nodes.push({id: 0, label: `${searchValue}`, color: "#584C47"}); // purple #874d99
+      nodes.push({id: 0, label: `${searchValue}`, color: "#998881"}); // coffee #584C47, purple #874d99
       for(var i = 0; i < relatedKeywords.length; i+=1){
         nodes.push({id: i+1, label: `${relatedKeywords[i]}`, color: "#D4D4D4"});
         edges.push({from: 0, to: i+1, arrows: { from: { enabled: false, type: 'arrow' } }});

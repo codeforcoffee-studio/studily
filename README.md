@@ -16,7 +16,11 @@ This expanded version is built by Samuel Tang (Product Design, Full stack) with 
 <img src="./imgs/architecture.png"
      alt="studily-architecture" width="700"/>    
 </br>
-check out the README files in `frontend` & `backend` folder for detailed documentation. 
+Check out the README files in `frontend` & `backend` folder for detailed documentation.   
+</br>
+<img src="./imgs/diagram.png"
+     alt="studily-diagram" width="700"/>    
+</br>
 
 ## Product Design
 <img src="./imgs/keyword.png"

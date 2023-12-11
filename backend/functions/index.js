@@ -5,7 +5,8 @@ var cors = require('cors')
 app.use(cors())
 
 const { 
-    chatgptAPI
+    chatgptAPI,
+    wikiAPI
 } = require('./APIs/apis')
 
 app.get('/', (req, res) => {
@@ -13,5 +14,6 @@ app.get('/', (req, res) => {
 });
  
 app.post('/chatgpt_api', chatgptAPI);
+app.post('/wiki_api', wikiAPI);
 
 exports.api = functions.https.onRequest(app);
