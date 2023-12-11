@@ -110,7 +110,7 @@ const WikiListComponent = ({initNode}) => {
                     // </Button>
                     <Button loading scale={0.75}></Button>
                     :
-                    <Button disabled icon={<Zap />} auto scale={0.8} onClick={() => handleClick(item.pageid, index)} style={styles.button}>Summarize</Button>
+                    <Button icon={<Zap />} auto scale={0.8} onClick={() => handleClick(item.pageid, index)} style={styles.button}>Summarize</Button>
                 }
             </div>
             {
