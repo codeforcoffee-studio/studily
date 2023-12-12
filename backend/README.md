@@ -29,3 +29,6 @@ or
 
 ### HTTP-POST
 
+https://github.com/damonwonghv/youtube-search-api
+https://github.com/Kakulukian/youtube-transcript
+https://github.com/html-to-text/node-html-to-text

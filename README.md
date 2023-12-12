@@ -26,3 +26,12 @@ Check out the README files in `frontend` & `backend` folder for detailed documen
 <img src="./imgs/keyword.png"
      alt="studily-keyword" width="700"/>    
 </br>
+<img src="./imgs/wiki.png"
+     alt="studily-wiki" width="700"/>    
+</br>
+<img src="./imgs/youtube.png"
+     alt="studily-youtube" width="700"/>    
+</br>
+<img src="./imgs/bfsearch.png"
+     alt="studily-bfsearch" width="700"/>    
+</br>

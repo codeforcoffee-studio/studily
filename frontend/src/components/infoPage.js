@@ -76,8 +76,8 @@ const WikiListComponent = ({initNode}) => {
         axios.post(API_BASE_URL+'/wiki_api', { "type": "page-summary", "link": items[pageid].original_link })
         .then(res => {
           console.log(res);
-          console.log("summary: ", res.data.message);
-          setSummaries({...summaries, [pageid]: res.data.message});
+          console.log("summary: ", res.data);
+          setSummaries({...summaries, [pageid]: res.data});
           setWaitingIndex(-1);
         })
         .catch(error => {
@@ -100,7 +100,7 @@ const WikiListComponent = ({initNode}) => {
             <div style={styles.divrow}> 
                 <Button icon={<BookOpen />} style={{width:"300px"}}>
                     <a key={index} href={item.original_link} target="_blank" rel="noopener noreferrer" style={styles.link}>
-                        {truncateString(item.title, 40)}
+                        {truncateString(item.title, 30)}
                     </a>
                 </Button>
                 {
@@ -108,7 +108,10 @@ const WikiListComponent = ({initNode}) => {
                     // <Button auto style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     //     <Spinner />
                     // </Button>
-                    <Button loading scale={0.75}></Button>
+                    <>
+                        <Spacer w={0.5}></Spacer>
+                        <Button loading scale={0.75}></Button>
+                    </>
                     :
                     <Button icon={<Zap />} auto scale={0.8} onClick={() => handleClick(item.pageid, index)} style={styles.button}>Summarize</Button>
                 }
@@ -137,11 +140,11 @@ const YouTubeListComponent = ({ initNode }) => {
     useEffect(()=>{
         setWaiting(true);
         if(initNode){
-            axios.post('http://140.99.171.75:8000/api/youtube_api', { "type": "keyword_search", "keyword": initNode.label })
+            axios.post(API_BASE_URL+'/youtube_api', { "type": "keyword-search", "keyword": initNode.label })
             .then(res => {
               console.log(res);
-              console.log("youtube links: ", res.data.message);
-              setItems(res.data.message)
+              console.log("youtube links: ", res.data);
+              setItems(res.data)
               setWaiting(false);
             })
             .catch(error => {
@@ -193,11 +196,11 @@ const YouTubeListComponent = ({ initNode }) => {
 
     const handleClick = (videoId, index) => {
         setWaitingIndex(index);
-        axios.post('http://140.99.171.75:8000/api/youtube_api', { "type": "video_transcript", "keyword": videoId })
+        axios.post(API_BASE_URL+'/youtube_api', { "type": "summary", "link": videoId })
         .then(res => {
           console.log(res);
-          console.log("summary: ", res.data.message);
-          setSummaries({...summaries, [videoId]: res.data.message});
+          console.log("summary: ", res.data);
+          setSummaries({...summaries, [videoId]: res.data});
           setWaitingIndex(-1);
         })
         .catch(error => {
@@ -215,7 +218,7 @@ const YouTubeListComponent = ({ initNode }) => {
             </div>
             :
         items.map((item, index) => (
-          index < 5 ? 
+        //   index < 5 ? 
           <div style={styles.divcol} key={index}>
             <div style={styles.divrow}> 
                 <Button icon={<Youtube />} style={{width:"300px"}}>
@@ -228,7 +231,10 @@ const YouTubeListComponent = ({ initNode }) => {
                     // <Button auto style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     //     <Spinner />
                     // </Button>
-                    <Button loading scale={0.75}></Button>
+                    <>
+                        <Spacer w={0.5}></Spacer>
+                        <Button loading scale={0.75}></Button>
+                    </>
                     :
                     <Button icon={<Zap />} auto scale={0.8} onClick={() => handleClick(item.videoId, index)} style={styles.button}>Summarize</Button>
                 }
@@ -240,8 +246,8 @@ const YouTubeListComponent = ({ initNode }) => {
                 <></>
             }
           </div>
-          :
-          <></>
+        //   :
+        //   <></>
         ))}
       </div>
     );
@@ -468,10 +474,10 @@ const InfoPage = ({initNode, path, graph, centerNode}) => {
                             <Tabs.Item label="Wikipedia" value="1">
                                 <WikiListComponent initNode={initNode}/>
                             </Tabs.Item>
-                            {/* <Tabs.Item label="YouTube" value="2">
+                            <Tabs.Item label="YouTube" value="2">
                                 <YouTubeListComponent initNode={initNode}/> 
                             </Tabs.Item>
-                            <Tabs.Item label="Bing" value="3">
+                            {/* <Tabs.Item label="Bing" value="3">
                                 <BingListComponent initNode={initNode}/>
                             </Tabs.Item> */}
                         </Tabs>
