@@ -1,5 +1,5 @@
 ## run locally
-- `npm install --force`  // bypass React version compatibility issues between Geist UI and Vis-React
+- `npm install --force` or `npm install --legacy-peer-deps` bypass peerDependency auto-installation in order to use React 18 (vis-react has peer-dependency of React 16)
 - `npm start`
 
 ## project structure
