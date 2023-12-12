@@ -10,6 +10,7 @@ config.js
 
 # Firebase cache
 .firebase/
+.firebaserc
 
 # Firebase config
 
