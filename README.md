@@ -38,7 +38,4 @@ youtube transcript summary
 <img src="./imgs/youtube.png"
      alt="studily-youtube" width="700"/>    
 </br>
-<img src="./imgs/banner.png"
-     alt="studily-banner" width="700"/>    
-</br>
 
