@@ -1,14 +1,15 @@
 ## run locally
-- `npm install --force`  
+- `npm install --force`  // bypass React version compatibility issues between Geist UI and Vis-React
 - `npm start`
 
 ## project structure
 - main component: `App.js`, which splits the page into two parts
     - search & knowledge graph
-        - /components/`searchButton.js` - breath & depth search
-        - /components/`knowledgeGraph.js` - graph & nodes
+        - /components/`SearchSection.js` - breath & depth search
+        - /components/`KnowledgeGraph.js` - graph & nodes
     - information display 
-        - /components/`infoPage.js`: definition, wiki, youtube
+        - /components/`InfoPage.js` & /`ListComponent.js`: definition, wiki, youtube
+- api/APICall.js stores all API call functions
 
 ## libraries
 - React: https://react.dev/

@@ -1,13 +1,11 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { Grid, Card, Text, Spacer, Input, Button, Spinner, Select } from '@geist-ui/core';
+import React, { useState } from "react";
+import { Text, Spacer, Button, Select } from '@geist-ui/core';
 import { Circle, Search } from '@geist-ui/icons';
 
-
-const SearchButton = ({node, addGraph}) => {
+const SearchSection = ({node, addGraph}) => {
     const [isHovered, setIsHovered] = useState(false);
     const [select, setSelect] = useState("breath");
-    const [value, setValue] = useState("1");
-
+  
     const styles = {
         divcol: {
             padding: '4px', 
@@ -39,12 +37,8 @@ const SearchButton = ({node, addGraph}) => {
         setSelect(val)
     }
 
-    const onValueChange = (val) => {
-        setValue(val);
-    }
-
     const onSubmitButtonPressed = () => {
-        addGraph(node, select, value);
+        addGraph(node, select);
     }
 
   return (
@@ -77,22 +71,8 @@ const SearchButton = ({node, addGraph}) => {
             </Button>
             <Button icon={<Search />} auto onClick={onSubmitButtonPressed}></Button>
         </div>
-        {/* <div style={styles.divrow}>
-        <Fragment>
-                <Spacer w={1}/>
-                <Text small>for a depth of</Text>
-                <Spacer w={1}/>
-                <Select placeholder="Choose one" onChange={onValueChange} initialValue="1" width="20%">
-                    <Select.Option value="1">1</Select.Option>
-                    <Select.Option value="2">2</Select.Option>
-                    <Select.Option value="3">3</Select.Option>
-                </Select>
-            </Fragment>
-            <Spacer w={1}/>
-            <Button icon={<Search />} auto onClick={onSubmitButtonPressed}></Button>
-        </div> */}
     </div>
   );
 };
 
-export default SearchButton;
+export default SearchSection;

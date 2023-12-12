@@ -1,19 +1,19 @@
 .App {
-    font-family: 'Inter', sans-serif;
-    text-align: center;
-  }
-  .vis-react {
-    height: 85vh;
-    width: 50vw;
-    border: none;
-    /* overflow: auto; */
-    /* margin-left: 50px; */
-    /* padding: 2rem; */
-    /* display: block; */
-    /* margin: 0 auto; */
-    /* background-color: blueviolet; */
-  }
-  .vis-react-title {
-    text-align: center;
-  }
+  font-family: 'Inter', sans-serif;
+  text-align: center;
+}
+.vis-react {
+  height: 85vh;
+  width: 50vw;
+  border: none;
+  /* overflow: auto; */
+  /* margin-left: 50px; */
+  /* padding: 2rem; */
+  /* display: block; */
+  /* margin: 0 auto; */
+  /* background-color: blueviolet; */
+}
+.vis-react-title {
+  text-align: center;
+}
   

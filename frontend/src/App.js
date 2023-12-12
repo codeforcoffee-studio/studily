@@ -1,18 +1,13 @@
 import React, {useState, useEffect} from 'react';
 import './styles/App.css';
-
 import "./styles/styles.css";
-import { Grid, Card, Text, Spacer, Input, Button, Spinner, Toggle, Select,  } from '@geist-ui/core';
+import { Grid, Text, Spacer, Button, Spinner, Toggle  } from '@geist-ui/core';
 import { CornerDownLeft, Coffee, CornerLeftDown, CornerRightUp } from '@geist-ui/icons'
-
 import logo from "./imgs/studily-signature.png"
-import InfoPage from './components/infoPage';
-
-import axios from 'axios';
-import KnowledgeGraph from './components/knowledgeGraph';
-import SearchButton from './components/searchButton';
-
-const API_BASE_URL = "http://localhost:5000/studily-ca0ed/us-central1/api";
+import InfoPage from './components/InfoPage';
+import KnowledgeGraph from './components/KnowledgeGraph';
+import SearchSection from './components/SearchSection';
+import * as APICalls from "./apis/APICalls";
 
 const App = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -21,6 +16,7 @@ const App = () => {
   const [graph, setGraph] = useState(null);
   const [definitions, setDefinitions] = useState({});
   const [waiting, setWaiting] = useState(false);
+  const [infoWaiting, setInfoWaiting] = useState(false);
   const [dragNode, setDragNode] = useState(null);
   const [gravity, setGravity] = useState(true);
   const [nodeSize, setNodeSize] = useState(13);
@@ -45,9 +41,6 @@ const App = () => {
       alignContent: 'center'
     },
     scroll: {
-      // margin:"4px, 4px",
-      // padding:"4px",
-      // backgroundColor: "green",
       width: "100%",
       height: "100%",
       overflowX: "hidden",
@@ -59,7 +52,14 @@ const App = () => {
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: "center"
-  },
+    },
+    divStyle: {
+      width: '100%', 
+      height: '100%', 
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }
   }
 
   useEffect(()=>{
@@ -90,46 +90,40 @@ const App = () => {
     setSearchValue(e.target.value);
   }
 
-  const onSubmitButtonPressed = () => {
+  const onSubmitButtonPressed = async () => {
     if(searchValue == ""){
       return;
     }
     console.log("submitting ", searchValue);
     setWaiting(true);
 
-    axios.post(API_BASE_URL+"/chatgpt_api", { "type": "keyword-list", "keyword": `${searchValue}` , "previous_word": ""})
-    .then(res => {
-      console.log(res);
-      console.log(res.data);
-      let relatedKeywords = res.data.replace(/\./g, '').split(', ');
+    let relatedKeywords = await APICalls.ChatGPTAPI_KeywordSearch(searchValue);
 
-      let nodes = [];
-      let edges = [];
-      // nodes: [
-      //   { id: 1, label: "Node 1" },
-      //   { id: 2, label: "Node 2" },
-      //   { id: 3, label: "Node 3" }
-      // ],
-      // edges: [
-      //   { from: 1, to: 2 },
-      //   { from: 1, to: 3 }
-      // ]
-      nodes.push({id: 0, label: `${searchValue}`, color: "#998881"}); // coffee #584C47, purple #874d99
-      for(var i = 0; i < relatedKeywords.length; i+=1){
-        nodes.push({id: i+1, label: `${relatedKeywords[i]}`, color: "#D4D4D4"});
-        edges.push({from: 0, to: i+1, arrows: { from: { enabled: false, type: 'arrow' } }});
-      }
-      console.log(nodes);
-      console.log(edges); 
+    let nodes = [];
+    let edges = [];
+    /*
+      nodes: [
+        { id: 1, label: "Node 1" },
+        { id: 2, label: "Node 2" },
+        { id: 3, label: "Node 3" }
+      ],
+      edges: [
+        { from: 1, to: 2 },
+        { from: 1, to: 3 }
+      ]
+    */ 
+    nodes.push({id: 0, label: `${searchValue}`, color: "#998881"}); // coffee #584C47, purple #874d99
+    for(var i = 0; i < relatedKeywords.length; i+=1){
+      nodes.push({id: i+1, label: `${relatedKeywords[i]}`, color: "#D4D4D4"});
+      edges.push({from: 0, to: i+1, arrows: { from: { enabled: false, type: 'arrow' } }});
+    }
+    console.log(nodes);
+    console.log(edges); 
 
-      let newGraph = {nodes: nodes, edges: edges};
-      console.log(newGraph);
-      setGraph(newGraph);
-      setWaiting(false);
-    })
-    .catch(error => {
-      console.error(error);
-    });
+    let newGraph = {nodes: nodes, edges: edges};
+    console.log(newGraph);
+    setGraph(newGraph);
+    setWaiting(false);
   }
 
   const breadcrumbs = (node_id) => {
@@ -150,36 +144,36 @@ const App = () => {
     return path.reverse();
   }
 
-  const selectNode = (node_id) => {
+  const selectNode = async (node_id) => {
     console.log("Selected nodes: ", graph.nodes[node_id]);
     const keyword = graph.nodes[node_id].label;
 
     const bread = breadcrumbs(node_id);
+    var nodeObj = {};
+    setInfoWaiting(true);
 
     if(!definitions[keyword]){
-      axios.post(API_BASE_URL+"/chatgpt_api", { "type": "keyword-explanation", "keyword": keyword + " in the context of " + `${searchValue} `, "previous_word": ""})
-      .then(res => {
-        console.log(res.data);
-        setDefinitions({[searchValue]: res.data});
-        const nodeObj = {
-          ...graph.nodes[node_id],
-          'definition': res.data
-        }
-        setNode(nodeObj);
-      })
+      var definition = await APICalls.ChatGPTAPI_KeywordDefinition(keyword, searchValue);
+      console.log("def: " + definition);
+      setDefinitions({[searchValue]: definition});
+      nodeObj = {
+        ...graph.nodes[node_id],
+        'definition': definition
+      }
     }
-  
-    const nodeObj = {
-      ...graph.nodes[node_id],
-      'definition': definitions[keyword]
+    else{
+      nodeObj = {
+        ...graph.nodes[node_id],
+        'definition': definitions[keyword]
+      }
     }
     setNode(nodeObj);
     setPath(bread);
+    setInfoWaiting(false);
   }
 
-  const centerNode = (node_id) => {
-    console.log("centering node: ", node_id);
-    //graph.nodes[node_id] = {...graph.nodes[node_id], x: 0, y: 0}
+  const clickNodeFromBreadcrumbs = (node_id) => {
+    selectNode(node_id)
   }
 
   const handleDragNode = (node_id) => {
@@ -189,82 +183,56 @@ const App = () => {
     setDragNode(nodeObj);
   }
 
-  const addGraph = (node, type, depth) => {
-    console.log("searching: " + node.label + " with id " + node.id + " " + type + " " + depth);
+  const addGraph = async (node, type) => {
+    console.log("searching: " + node.label + " with id " + node.id + " " + type);
     const bread = breadcrumbs(node.id);
+    var nodes = [];
+    var edges = [];
+    /*
+        nodes: [
+          { id: 1, label: "Node 1" },
+          { id: 2, label: "Node 2" },
+          { id: 3, label: "Node 3" }
+        ],
+        edges: [
+          { from: 1, to: 2 },
+          { from: 1, to: 3 }
+        ]
+    */
     if(type === "breath"){
-      axios.post(API_BASE_URL+"/chatgpt_api", { "type": "keyword-list-bfs", "keyword": `${node.label}`, "previous_keyword": `${graph.nodes[bread.length-1].label}`})
-      .then(res => {
-        console.log(res);
-        console.log(res.data);
-        let relatedKeywords = res.data.replace(/\./g, '').split(', ');
-  
-        let nodes = [];
-        let edges = [];
-        // nodes: [
-        //   { id: 1, label: "Node 1" },
-        //   { id: 2, label: "Node 2" },
-        //   { id: 3, label: "Node 3" }
-        // ],
-        // edges: [
-        //   { from: 1, to: 2 },
-        //   { from: 1, to: 3 }
-        // ]
-        for(var i = 0; i < 5; i+=1){
-          nodes.push({id: graph.nodes.length + (i), label: `${relatedKeywords[i]}`, color: "#D4D4D4"});
-          edges.push({from: node.id, to: graph.nodes.length + (i+1), arrows: { from: { enabled: false, type: 'arrow' } }});
-        }
-        console.log(nodes);
-        console.log(edges); 
-  
-        let newGraph = {nodes: graph.nodes.concat(nodes), edges: graph.edges.concat(edges)};
-        console.log(newGraph);
-        setGraph(newGraph);
-      })
-      .catch(error => {
-        console.error(error);
-      });
+      let relatedKeywords = await APICalls.ChatGPTAPI_BFS(node.label, graph.nodes[bread.length-1].label);
+      
+      for(let i = 0; i < 5; i+=1){
+        nodes.push({id: graph.nodes.length + (i), label: `${relatedKeywords[i]}`, color: "#D4D4D4"});
+        edges.push({from: node.id, to: graph.nodes.length + (i), arrows: { from: { enabled: false, type: 'arrow' } }});
+      }
+      console.log(nodes);
+      console.log(edges); 
+
+      let newGraph = {nodes: graph.nodes.concat(nodes), edges: graph.edges.concat(edges)};
+      console.log(newGraph);
+      setGraph(newGraph);
     }
     else if(type === "depth"){  
-      axios.post(API_BASE_URL+"/chatgpt_api", { "type": "keyword-list-dfs", "keyword": `${node.label}`, "previous_keyword": `${graph.nodes[bread.length-1].label}`})
-      .then(res => {
-        console.log(res);
-        console.log(res.data);
-        let relatedKeywords = res.data.replace(/\./g, '').split(', ');
-  
-        let nodes = [];
-        let edges = [];
-        // nodes: [
-        //   { id: 1, label: "Node 1" },
-        //   { id: 2, label: "Node 2" },
-        //   { id: 3, label: "Node 3" }
-        // ],
-        // edges: [
-        //   { from: 1, to: 2 },
-        //   { from: 1, to: 3 }
-        // ]
-        console.log("graph nodes length: ",graph.nodes.length);
-        var prev_node = node.id;
-        for(var i = 0; i < 3; i+=1){
-          nodes.push({id: graph.nodes.length + i, label: `${relatedKeywords[i]}`, color: "#D4D4D4"});
-          edges.push({from: prev_node, to: graph.nodes.length + (i+1), arrows: { from: { enabled: false, type: 'arrow' } }});
-          prev_node = graph.nodes.length + (i+1);
-        }
-        console.log(nodes);
-        console.log(edges); 
-  
-        let newGraph = {nodes: graph.nodes.concat(nodes), edges: graph.edges.concat(edges)};
-        console.log(newGraph);
-        setGraph(newGraph);
-      })
-      .catch(error => {
-        console.error(error);
-      });
+      let relatedKeywords = await APICalls.ChatGPTAPI_DFS(node.label, graph.nodes[bread.length-1].label);
+     
+      console.log("graph nodes length: ",graph.nodes.length);
+      var prev_node = node.id;
+      for(let i = 0; i < 3; i+=1){
+        nodes.push({id: graph.nodes.length + (i), label: `${relatedKeywords[i]}`, color: "#D4D4D4"});
+        edges.push({from: prev_node, to: graph.nodes.length + (i), arrows: { from: { enabled: false, type: 'arrow' } }});
+        prev_node = graph.nodes.length + (i);
+      }
+      console.log(nodes);
+      console.log(edges); 
+
+      let newGraph = {nodes: graph.nodes.concat(nodes), edges: graph.edges.concat(edges)};
+      console.log(newGraph);
+      setGraph(newGraph);
     }
   }  
 
   const toggleGravity = () => {
-    //console.log("toggling gravity...", !gravity);
     setGravity(!gravity);
   }
 
@@ -306,15 +274,8 @@ const App = () => {
             <Spacer w={1}/>
             <Button icon={<CornerDownLeft />} auto onClick={onSubmitButtonPressed}></Button>
           </div>
-        
-            {/* <div className="vis-react">
-              <VisReact selectNode={selectNode} initialGraph={initialGraph}/>
-            </div> */}
-          
-          {/* <div className="vis-react">
-            <MyGraph />
-          </div> */}
-          <SearchButton node={dragNode} addGraph={addGraph}/>
+
+          <SearchSection node={dragNode} addGraph={addGraph}/>
           <div style={styles.divrow}>
             <Text small>gravity</Text>
             <Spacer w={0.5}/>
@@ -339,12 +300,10 @@ const App = () => {
               <KnowledgeGraph initGraph={graph} selectNode={selectNode} handleDragNode={handleDragNode} gravity={gravity} nodeSize={nodeSize}/>
             </div>
           }
-
-         
         </Grid>
         <Grid xs={24} md={12}>
             <div style={styles.scroll}>
-              <InfoPage  initNode={node} path={path} graph={graph} centerNode={centerNode}/>
+                <InfoPage initNode={node} path={path} graph={graph} clickNodeFromBreadcrumbs={clickNodeFromBreadcrumbs} infoWaiting={infoWaiting}/>
             </div>
         </Grid>
       </Grid.Container>

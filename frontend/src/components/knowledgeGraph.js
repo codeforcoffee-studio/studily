@@ -1,4 +1,4 @@
-import React, { Component, Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Graph from "vis-react";
 
 const KnowledgeGraph = ({initGraph, selectNode, handleDragNode, gravity, nodeSize}) => {

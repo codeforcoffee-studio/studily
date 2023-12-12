@@ -1,5 +1,4 @@
 const { log } = require('firebase-functions/logger');
-const { admin, db } = require('../util/admin');
 const { firebaseConfig } = require('../util/config');
 const { initializeApp } = require('firebase/app');
 const axios = require('axios');
@@ -112,7 +111,7 @@ exports.wikiAPI = async (req, res) => {
                 data.push({
                    "title": response.data[1][i],
                    "original_link": response.data[3][i],
-                   "pageid": i 
+                   "id": i 
                 });
             }
             //log(data)
@@ -126,7 +125,7 @@ exports.wikiAPI = async (req, res) => {
         log(link);
 
         try{
-            const axiosResponse = await axios.get(link); //"https://en.wikipedia.org/api/rest_v1/page/html/steve_jobs");
+            const axiosResponse = await axios.get(link);
             //log(axiosResponse.data);
     
             var text = convert(axiosResponse.data, { wordwrap: 130 })
@@ -168,7 +167,7 @@ exports.wikiAPI = async (req, res) => {
     }
 }
 
-//POST /youtube_api
+// POST /youtube_api
 exports.youtubeAPI = async (req, res) => {
     const openai = new OpenAI({
         apiKey: process.env.OPENAI_API_KEY,
@@ -184,7 +183,7 @@ exports.youtubeAPI = async (req, res) => {
         for(var i = 0; i < limit; i++){
             data.push({
                 "title": response.items[i].title,
-                "videoId": response.items[i].id,
+                "id": response.items[i].id,
             });
         }
         //log(data)
@@ -193,7 +192,7 @@ exports.youtubeAPI = async (req, res) => {
     }
     else if(type == "summary"){
         try{
-            let transcript = await YoutubeTranscript.fetchTranscript(link);
+            let transcript = await YoutubeTranscript.fetchTranscript(link,{lang: "en"});
             var transcript_text = "";
             for(var i = 0; i < transcript.length; i++){
                 transcript_text += transcript[i].text + " ";

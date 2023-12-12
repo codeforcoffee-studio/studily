@@ -1,369 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import { Card, Text, Spacer, Button, Spinner, Tabs, Modal } from '@geist-ui/core'
-import { Copy, Info, Flag, Settings, Moon, Zap, Youtube, BookOpen, Circle, Search, ArrowRight, Play, User, Save } from '@geist-ui/icons';
-import {  } from '@geist-ui/icons';
+import { Copy, Info, Flag, Settings, Moon, Circle, ArrowRight, Save } from '@geist-ui/icons';
 import "../styles/info.css";
-import axios from 'axios';
-
-const API_BASE_URL = "http://localhost:5000/studily-ca0ed/us-central1/api";
-
-const WikiListComponent = ({initNode}) => {
-    const [summaries, setSummaries] = useState({});
-    const [waitingIndex, setWaitingIndex] = useState(-1);
-    const [items, setItems] = useState([])
-    const [waiting, setWaiting] = useState(false);
-
-    useEffect(()=>{
-        if(initNode){
-            setWaiting(true);
-            console.log(initNode.label);
-            axios.post(API_BASE_URL+'/wiki_api', { "type": "keyword-search", "keyword": initNode.label })
-            .then(res => {
-              console.log(res);
-              console.log("wiki links: ", res.data);
-              setItems(res.data)
-              setWaiting(false);
-            })
-            .catch(error => {
-                console.log(error);
-            })
-        }
-    }, [initNode])
-
-    const styles = {
-        divcol: {
-            background: '#f5f5f5', 
-            padding: '2px', 
-            borderRadius: '10px',
-            margin: '5px',
-            display: 'flex', 
-            flexDirection: 'column',
-            alignContent: "center"
-        },
-        divrow: {
-            display: 'flex', 
-            flexDirection: 'row',
-            justifyContent: 'center'
-        },
-        link: {
-            textDecoration: 'none', 
-            color: '#333', 
-            // fontWeight: 'bold'
-        },
-        button: {
-            marginLeft: '10px'
-        },
-        div: {
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: "100%",
-            justifyContent: 'center',
-            alignContent: 'center',
-            textAlign: 'left'
-        },
-    }
-
-    function truncateString(string, maxLength) {
-        if (string.length > maxLength) {
-          return string.substring(0, maxLength - 3) + '...';
-        }
-        return string;
-      }
-
-    const handleClick = (pageid, index) => {
-        setWaitingIndex(index);
-        axios.post(API_BASE_URL+'/wiki_api', { "type": "page-summary", "link": items[pageid].original_link })
-        .then(res => {
-          console.log(res);
-          console.log("summary: ", res.data);
-          setSummaries({...summaries, [pageid]: res.data});
-          setWaitingIndex(-1);
-        })
-        .catch(error => {
-            console.log(error);
-        });
-    }
-    
-    return (
-      <div>
-        {
-        waiting ? 
-            <div style={styles.div}>
-                <Spacer h={1}/>
-                <Spinner/>
-            </div>
-            :
-        items.map((item, index) => (
-          //index < 5 ? 
-          <div style={styles.divcol} key={index}>
-            <div style={styles.divrow}> 
-                <Button icon={<BookOpen />} style={{width:"300px"}}>
-                    <a key={index} href={item.original_link} target="_blank" rel="noopener noreferrer" style={styles.link}>
-                        {truncateString(item.title, 30)}
-                    </a>
-                </Button>
-                {
-                    waitingIndex === index ? 
-                    // <Button auto style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    //     <Spinner />
-                    // </Button>
-                    <>
-                        <Spacer w={0.5}></Spacer>
-                        <Button loading scale={0.75}></Button>
-                    </>
-                    :
-                    <Button icon={<Zap />} auto scale={0.8} onClick={() => handleClick(item.pageid, index)} style={styles.button}>Summarize</Button>
-                }
-            </div>
-            {
-                summaries[item.pageid] ? 
-                <div style={{textAlign: 'left', padding: "15px"}}><Text>{summaries[item.pageid]}</Text></div>
-                :
-                <></>
-            }
-          </div>
-        //   :
-        //   <></>
-        ))
-        }
-      </div>    
-    );
-};
-
-const YouTubeListComponent = ({ initNode }) => {
-    const [summaries, setSummaries] = useState({});
-    const [waitingIndex, setWaitingIndex] = useState(-1);
-    const [items, setItems] = useState([])
-    const [waiting, setWaiting] = useState(false);
-
-    useEffect(()=>{
-        setWaiting(true);
-        if(initNode){
-            axios.post(API_BASE_URL+'/youtube_api', { "type": "keyword-search", "keyword": initNode.label })
-            .then(res => {
-              console.log(res);
-              console.log("youtube links: ", res.data);
-              setItems(res.data)
-              setWaiting(false);
-            })
-            .catch(error => {
-                console.log(error);
-            })
-        }
-    }, [initNode])
-
-    const styles = {
-        divcol: {
-            background: '#E4C9C9', 
-            padding: '4px', 
-            borderRadius: '10px',
-            margin: '5px',
-            display: 'flex', 
-            flexDirection: 'column',
-            alignContent: "center"
-        },
-        divrow: {
-            display: 'flex', 
-            flexDirection: 'row',
-            justifyContent: 'center'
-        },
-        link: {
-            textDecoration: 'none', 
-            color: '#333', 
-            // fontWeight: 'bold'
-        },
-        button: {
-            marginLeft: '10px'
-        },
-        div: {
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: "100%",
-            justifyContent: 'center',
-            alignContent: 'center',
-            textAlign: 'left'
-        },
-    }
-
-    function truncateString(string, maxLength) {
-        if (string.length > maxLength) {
-          return string.substring(0, maxLength - 3) + '...';
-        }
-        return string;
-      }
-
-    const handleClick = (videoId, index) => {
-        setWaitingIndex(index);
-        axios.post(API_BASE_URL+'/youtube_api', { "type": "summary", "link": videoId })
-        .then(res => {
-          console.log(res);
-          console.log("summary: ", res.data);
-          setSummaries({...summaries, [videoId]: res.data});
-          setWaitingIndex(-1);
-        })
-        .catch(error => {
-            console.log(error);
-        });
-    }
-    
-    return (
-      <div>
-        {
-        waiting ? 
-            <div style={styles.div}>
-                <Spacer h={1}/>
-                <Spinner/>
-            </div>
-            :
-        items.map((item, index) => (
-        //   index < 5 ? 
-          <div style={styles.divcol} key={index}>
-            <div style={styles.divrow}> 
-                <Button icon={<Youtube />} style={{width:"300px"}}>
-                    <a key={index} href={"https://www.youtube.com/watch?v="+item.videoId} target="_blank" rel="noopener noreferrer" style={styles.link}>
-                        {truncateString(item.title, 30)}
-                    </a>
-                </Button>
-                {
-                    waitingIndex === index ? 
-                    // <Button auto style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    //     <Spinner />
-                    // </Button>
-                    <>
-                        <Spacer w={0.5}></Spacer>
-                        <Button loading scale={0.75}></Button>
-                    </>
-                    :
-                    <Button icon={<Zap />} auto scale={0.8} onClick={() => handleClick(item.videoId, index)} style={styles.button}>Summarize</Button>
-                }
-            </div>
-            {
-                summaries[item.videoId] ? 
-                <div style={{textAlign: 'left', padding: "15px"}}><Text>{summaries[item.videoId]}</Text></div>
-                :
-                <></>
-            }
-          </div>
-        //   :
-        //   <></>
-        ))}
-      </div>
-    );
-};
-
-const BingListComponent = ({ initNode }) => {
-    const [summaries, setSummaries] = useState({});
-    const [waitingIndex, setWaitingIndex] = useState(-1);
-    const [items, setItems] = useState([])
-    const [waiting, setWaiting] = useState(false);
-
-    useEffect(()=>{
-        setWaiting(true);
-        if(initNode){
-            axios.post('http://140.99.171.75:8000/api/serpapi_api', { "engine": "bing", "query": initNode.label })
-            .then(res => {
-              console.log(res);
-              console.log("bing links: ", res.data.message);
-              setItems(res.data.message)
-              setWaiting(false);
-            })
-            .catch(error => {
-                console.log(error);
-            })
-        }
-    }, [initNode])
-
-    const styles = {
-        divcol: {
-            background: '#e5f3fd', 
-            padding: '4px', 
-            borderRadius: '10px',
-            margin: '5px',
-            display: 'flex', 
-            flexDirection: 'column',
-            alignContent: "center"
-        },
-        divrow: {
-            display: 'flex', 
-            flexDirection: 'row',
-            justifyContent: 'center'
-        },
-        link: {
-            textDecoration: 'none', 
-            color: '#333', 
-            // fontWeight: 'bold'
-        },
-        button: {
-            marginLeft: '10px'
-        },
-        div: {
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: "100%",
-            justifyContent: 'center',
-            alignContent: 'center',
-            textAlign: 'left'
-        },
-    }
-
-    function truncateString(string, maxLength) {
-        if (string.length > maxLength) {
-          return string.substring(0, maxLength - 3) + '...';
-        }
-        return string;
-      }
-
-    const handleClick = (videoId, index) => {
-        
-    }
-    
-    return (
-      <div>
-        {
-        waiting ? 
-            <div style={styles.div}>
-                <Spacer h={1}/>
-                <Spinner/>
-            </div>
-            :
-        items.map((item, index) => (
-          index < 5 ? 
-          <div style={styles.divcol} key={index}>
-            <div style={styles.divrow}> 
-                <Button icon={<Search />} style={{width:"300px"}}>
-                    <a key={index} href={item.link} target="_blank" rel="noopener noreferrer" style={styles.link}>
-                        {truncateString(item.title, 30)}
-                    </a>
-                </Button>
-                {/* {
-                    waitingIndex === index ? 
-                    // <Button auto style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    //     <Spinner />
-                    // </Button>
-                    <Button loading scale={0.75}></Button>
-                    :
-                    <Button icon={<Zap />} auto scale={0.8} onClick={() => handleClick(item.videoId, index)} style={styles.button}>Summarize</Button>
-                } */}
-            </div>
-          </div>
-          :
-          <></>
-        ))}
-      </div>
-    );
-};
+import ListComponent from './ListComponent';
 
 
-
-const InfoPage = ({initNode, path, graph, centerNode}) => {
+const InfoPage = ({initNode, path, graph, clickNodeFromBreadcrumbs, infoWaiting}) => {
     const [node, setNode] = useState(null);
-    const [wikiLinks, setWikiLinks] = useState([]);
-    const [waiting, setWaiting] = useState(false);
-    const [youtubeLinks, setYoutubeLinks] = useState([]);
-    const [bingLinks, setBingLinks] = useState([]);
     const [modal, setModal] = useState(false);
 
     useEffect(()=>{
@@ -409,13 +52,6 @@ const InfoPage = ({initNode, path, graph, centerNode}) => {
         },
     }
 
-    const content = () => (
-    <div style={{ padding: '10 10px' }}>
-      <Text h4>{"CodeForCoffee"}</Text>  
-      <Spacer h={.5} />
-    </div>
-  )
-
 
     return (
         <Card width="100%" height="100%" style={styles.definition}>
@@ -452,19 +88,19 @@ const InfoPage = ({initNode, path, graph, centerNode}) => {
                         :
                         <></>
                     }
-                    <Button icon={<Circle />} auto onClick={()=>{centerNode(item)}}>{graph.nodes[item].label}</Button>
+                    <Button icon={<Circle />} auto onClick={()=>{clickNodeFromBreadcrumbs(graph.nodes[item].id)}}>{graph.nodes[item].label}</Button>
                 </div>
                
                 ))}
             </div>
             {
-                node != null ? 
-                    waiting ? 
+                infoWaiting ? 
                     <div style={styles.div}>
                         <Spacer h={1}/>
                         <Spinner/>
                     </div>
-                    :
+                :
+                    node != null ? 
                     <div style={styles.div}>
                         <Spacer h={1}/>
                         <Text h3>{node.label}</Text>  
@@ -472,18 +108,15 @@ const InfoPage = ({initNode, path, graph, centerNode}) => {
                         
                         <Tabs initialValue="1">
                             <Tabs.Item label="Wikipedia" value="1">
-                                <WikiListComponent initNode={initNode}/>
+                                <ListComponent initNode={initNode} type={"wiki"}/>
                             </Tabs.Item>
                             <Tabs.Item label="YouTube" value="2">
-                                <YouTubeListComponent initNode={initNode}/> 
+                                <ListComponent initNode={initNode} type={"youtube"}/>
                             </Tabs.Item>
-                            {/* <Tabs.Item label="Bing" value="3">
-                                <BingListComponent initNode={initNode}/>
-                            </Tabs.Item> */}
                         </Tabs>
                     </div>
-                :
-                <></>
+                    :
+                    <></>
             }
         </Card>
     );
