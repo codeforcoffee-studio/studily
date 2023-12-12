@@ -26,7 +26,7 @@ Check out the README files in `frontend` & `backend` folder for detailed documen
 <img src="./imgs/keyword.png"
      alt="studily-keyword" width="700"/>    
 </br>
-breath-first search on a node
+breath-first search on a node (toggle off gravity to move nodes around)
 <img src="./imgs/bfsearch.png"
      alt="studily-bfsearch" width="700"/>    
 </br>
