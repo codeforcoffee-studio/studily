@@ -26,12 +26,15 @@ Check out the README files in `frontend` & `backend` folder for detailed documen
 <img src="./imgs/keyword.png"
      alt="studily-keyword" width="700"/>    
 </br>
+breath-first search on a node
 <img src="./imgs/bfsearch.png"
      alt="studily-bfsearch" width="700"/>    
 </br>
+wikipedia summary
 <img src="./imgs/wiki.png"
      alt="studily-wiki" width="700"/>    
 </br>
+youtube transcript summary
 <img src="./imgs/youtube.png"
      alt="studily-youtube" width="700"/>    
 </br>
