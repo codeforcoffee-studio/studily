@@ -1,5 +1,7 @@
 ## run locally
-- `npm install --force` or `npm install --legacy-peer-deps` bypass peerDependency auto-installation in order to use React 18 (vis-react has peer-dependency of React 16)
+- If using React version > 16: `npm install --force` or `npm install --legacy-peer-deps` 
+    - [bypass peerDependency auto-installation](https://stackoverflow.com/questions/66239691/what-does-npm-install-legacy-peer-deps-do-exactly-when-is-it-recommended-wh) in order to use later versions of React
+- alternatively, with React version 16 (vis-react's peer-dependency requirement): `npm install`
 - `npm start`
 
 ## project structure
